@@ -8,7 +8,8 @@ const app = express();
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || process.env.POSTGRESQL_ADDON_URI,
+  connectionString:
+    process.env.DATABASE_URL || process.env.POSTGRESQL_ADDON_URI,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -37,6 +38,21 @@ app.get("/times", (req, res) => {
   }
   res.send(result);
 });
+app.get("/db-init", async (req, res) => {
+  console.log(`Initializing database for route '/db-init'`);
+  try {
+    const client = await pool.connect();
+    await client.query(
+      "CREATE TABLE IF NOT EXISTS test_table (id SERIAL PRIMARY KEY, name VARCHAR(100))"
+    );
+    res.send("Database initialized");
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send("Error " + err);
+  }
+});
+
 app.get("/db", async (req, res) => {
   console.log(`Rendering the results of a database query for route '/db'`);
   try {
