@@ -1,66 +1,95 @@
-# nodejs-getting-started
+# Heroku's Getting Started, moved — Node.js and PostgreSQL on Clever Cloud
 
-A barebones Node.js app using [Express](https://expressjs.com/).
+> Heroku's *nodejs-getting-started* app (Express 5, EJS), with the database steps of its tutorial, moved to Clever Cloud as it is: the home page still says « Getting Started on Heroku », and `/db` lists the rows of a PostgreSQL table. The move changed **one line of code**: the pool reads Heroku's `DATABASE_URL` or, when it is absent, `POSTGRESQL_ADDON_URI`, which the **PostgreSQL add-on** injects into the linked app. The rest carries over: the **Node.js runtime** runs `npm start` (the same `node index.js` as the `Procfile`, which it does not read), gives the app its `PORT` and takes the Node version from `engines` in `package.json`. `heroku create`, `addons:create`, `config:set` and `git push heroku` become `clever create`, `clever addon create` with `clever service link-addon`, `clever env set` and `clever deploy`.
 
-This application supports the tutorials for both the [Cedar and Fir generations](https://devcenter.heroku.com/articles/generations) of the Heroku platform. You can check them out here:
+![Heroku's Getting Started home page, unchanged, served by the app run locally](docs/screenshot-desktop.png)
 
-* [Getting Started on Heroku with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
-* [Getting Started on Heroku Fir with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir)
+<img src="docs/screenshot-phone.png" alt="The /db page on a phone, run locally: two rows of test_table read from PostgreSQL" width="300">
 
-## Running Locally
+**Run it yourself.** The hosted demo was taken down after the presales review (November 2026). The steps in [Deploy on Clever Cloud](#deploy-on-clever-cloud) recreate it from scratch in about 5 minutes.
 
-Make sure you have [Node.js](http://nodejs.org/) and the [Heroku CLI](https://cli.heroku.com/) installed.
+## What changes from Heroku to Clever Cloud
 
-```sh
-$ git clone https://github.com/heroku/nodejs-getting-started.git # or clone your own fork
-$ cd nodejs-getting-started
-$ npm install
-$ npm start
+| On Heroku | On Clever Cloud | In this repo |
+|---|---|---|
+| `heroku create` | `clever create --type node` | — |
+| `git push heroku main` | `clever deploy`, which pushes to the app's Clever Cloud git remote | — |
+| `Procfile`: `web: node index.js` | Not read: the Node.js runtime runs `npm start`, and `scripts.start` is `node index.js` | `Procfile` and `package.json` unchanged |
+| `PORT` given to the dyno | `PORT` given by Clever Cloud (8080) | `process.env.PORT \|\| 5006`, unchanged |
+| `heroku addons:create heroku-postgresql`, which sets `DATABASE_URL` | `clever addon create postgresql-addon` then `clever service link-addon`, which inject `POSTGRESQL_ADDON_URI` (and `_HOST`, `_PORT`, `_DB`, `_USER`, `_PASSWORD`) | **The one changed line** (commit `5f1cfec`): `process.env.DATABASE_URL \|\| process.env.POSTGRESQL_ADDON_URI` |
+| TLS to the database, `ssl: { rejectUnauthorized: false }` | The same: the add-on accepts TLS | Unchanged |
+| `heroku pg:psql`, then `create table` | `/db-init` creates `test_table`; rows go in with `psql "$POSTGRESQL_ADDON_URI"` | `/db-init` added for the move (commit `f7ab34a`) |
+| `heroku config:set`, and `.env` read by `heroku local` | `clever env set`; nothing reads `.env` (no dotenv in the app) | `.env` (`TIMES=2`) kept |
+| `app.json` (Heroku Button) | Not read | Kept |
+| `engines.node`: 20.x, 22.x or 24.x | Read the same way by the Node.js runtime | Unchanged |
+| `heroku logs --tail`, `heroku open` | `clever logs`, `clever open` | — |
+
+## Deploy on Clever Cloud
+
+You need [clever-tools](https://www.clever.cloud/developers/doc/cli/) (`clever login` done), `psql`, and the ID of the organisation that will own the resources (`orga_…`, shown in the Console). Run the commands from the repo root: `clever create` links the folder to the new app.
+
+```bash
+# 1. The app and its size (heroku create)
+clever create --type node demo-heroku-nodejs-pg --org <org_id> --region par
+clever scale --min-flavor nano --max-flavor XS --min-instances 1 --max-instances 2
+
+# 2. PostgreSQL (dedicated xxs_sml, encrypted at rest), linked to the app (heroku addons:create heroku-postgresql)
+clever addon create postgresql-addon demo-heroku-db --plan xxs_sml --option encryption=true --region par --org <org_id> --yes
+clever service link-addon demo-heroku-db
+
+# 3. Variables (heroku config:set): optional, /times counts to 5 without it
+clever env set TIMES 2
+
+# 4. Deploy (git push heroku main)
+clever deploy
+clever open
+
+# 5. The table and a first row (heroku pg:psql); eval loads the app's variables into this shell without printing them
+curl -s https://<app-domain>/db-init     # "Database initialized"; clever domain gives <app-domain>
+eval "$(clever env -F shell)"
+psql "$POSTGRESQL_ADDON_URI" -c "INSERT INTO test_table (name) VALUES ('hello database')"
 ```
 
-Your app should now be running on [localhost:5006](http://localhost:5006/).
+Then open `/db`. Before step 5 it answers `Error error: relation "test_table" does not exist`: the app turns database errors into text, with an HTTP 200.
 
-## Deploying to Heroku
+## Variables
 
-Using resources for this example app counts towards your usage. [Delete your app](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-apps-destroy) and [database](https://devcenter.heroku.com/articles/heroku-postgresql#removing-the-add-on) as soon as you are done experimenting to control costs.
+| Variable | Set by | Role |
+|---|---|---|
+| `POSTGRESQL_ADDON_URI` | PostgreSQL add-on (linked) | Connection string, read when `DATABASE_URL` is absent |
+| `DATABASE_URL` | Heroku Postgres; nobody on Clever Cloud | Read first: set it locally |
+| `PORT` | Clever Cloud | Listening port: 8080; `5006` locally by default |
+| `TIMES` | you, optional | `/times` counts from 1 to it; default 5 |
 
-### Deploy on [Cedar][cedar]
+## Routes
 
-By default, apps use Eco dynos on [Cedar][cedar] if you are subscribed to Eco. Otherwise, it defaults to Basic dynos. The 
-Eco dynos plan is shared across all Eco dynos in your account and is recommended if you plan on deploying many small apps 
-to Heroku. Learn more about our low-cost plans [here](https://blog.heroku.com/new-low-cost-plans).
+`/` Heroku's Getting Started page (EJS) · `/cool` a random ASCII face (`cool-ascii-faces`) · `/times` `1 2 3 4 5` · `/db-init` creates `test_table (id SERIAL PRIMARY KEY, name VARCHAR(100))` if missing · `/db` the rows of `test_table` · `/lang-logo.png`, `/node.svg`, `/stylesheets/main.css` (static).
 
-Eligible students can apply for platform credits through our new [Heroku for GitHub Students program](https://blog.heroku.com/github-student-developer-program).
-
-```
-$ heroku create
-$ git push heroku main
-$ heroku open
-```
-
-### Deploy on [Fir][fir]
-
-By default, apps on [Fir][fir] use 1X-Classic dynos. To create an app on [Fir][fir] you'll need to 
-[create a private space](https://devcenter.heroku.com/articles/working-with-private-spaces#create-a-private-space)
-first.
+## Code tour
 
 ```
-$ heroku spaces:create <space-name> --team <team-name> --generation fir
-$ heroku create --space <space-name>
-$ git push heroku main
-$ heroku open
+index.js                Express 5 app: routes, pg pool (DATABASE_URL || POSTGRESQL_ADDON_URI, TLS without CA check), SIGTERM
+views/pages/index.ejs   Heroku's home page, unchanged
+views/pages/db.ejs      the rows of test_table
+views/partials/         header (Bootstrap 3 and jQuery from CDNs), Heroku nav bar
+public/                 logo and stylesheet
+Procfile                web: node index.js (Heroku only)
+app.json                Heroku Button manifest (Heroku only)
+.env                    TIMES=2, read by `heroku local` only
+test.js                 jest: GET / answers on IPv4 and IPv6 (npm test)
 ```
 
-## Documentation
+Forked from [heroku/nodejs-getting-started](https://github.com/heroku/nodejs-getting-started); the tutorial's `/cool`, `/times` and `/db` steps were added on top (`views/pages/db.ejs` comes from upstream). The Heroku guides linked from the page still describe Heroku.
 
-For more information about using Node.js on Heroku, see these Dev Center articles:
+## Run locally
 
-- [Getting Started on Heroku with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
-- [Getting Started on Heroku Fir with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir)
-- [Heroku Node.js Support](https://devcenter.heroku.com/articles/nodejs-support)
-- [Node.js on Heroku](https://devcenter.heroku.com/categories/nodejs)
-- [Best Practices for Node.js Development](https://devcenter.heroku.com/articles/node-best-practices)
-- [Using WebSockets on Heroku with Node.js](https://devcenter.heroku.com/articles/node-websockets)
+```bash
+npm install
+createdb readme_heroku    # any local PostgreSQL
+DATABASE_URL="postgresql://localhost/readme_heroku?sslmode=disable" PORT=8303 npm start
+curl -s localhost:8303/db-init
+```
 
-[cedar]: https://devcenter.heroku.com/articles/generations#cedar
-[fir]: https://devcenter.heroku.com/articles/generations#fir
+`?sslmode=disable` is needed with a local PostgreSQL without TLS (`The server does not support SSL connections` otherwise): the parameters of the connection string override the `ssl` option of the code. Node 20, 22 or 24 (`engines`); on a newer version npm warns and the app still runs.
+
+MIT License (`package.json`).
