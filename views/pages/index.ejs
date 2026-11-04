@@ -1,73 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <%- include ("../partials/header.ejs") %>
+  <%- include("../partials/header.ejs", { title: "Node.js Getting Started, moved to Clever Cloud" }) %>
 </head>
 
-<body>
+<body class="moving">
 
-  <%- include ("../partials/nav.ejs") %>
+<%- include("../partials/nav.ejs") %>
 
-<div class="jumbotron text-center">
-  <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/lang-logo.png">
-    </a>
-    <h1>Getting Started on Heroku with Node.js</h1>
-    <p>This is a sample Node application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
-    <a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-nodejs"><span class="glyphicon glyphicon-flash"></span> Getting Started on Heroku with Node.js</a>
-    <a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir"><span class="glyphicon glyphicon-flash"></span> Getting Started on Heroku Fir with Node.js</a>
-    <a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/nodejs-getting-started"><span class="glyphicon glyphicon-download"></span> Source on GitHub</a>
-  </div>
-</div>
-<div class="container">
-  <div class="lead">
-    To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to either of the following tutorials:
-    <ul>
-      <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs" class="alert-link">Getting Started on Heroku with Node.js</a></li>
-      <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir" class="alert-link">Getting Started on Heroku Fir with Node.js</a></li>
-    </ul>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-info-sign"></span> How this sample app works</h3>
-      <ul>
-        <li>This app was deployed to Heroku using Git.</li>
-        <li>When Heroku received the source code, it fetched all the dependencies in the <a href="https://github.com/heroku/nodejs-getting-started/blob/main/package.json">package.json</a>, creating a deployable build artifact.</li>
-        <li>The platform then spins up a dyno, a lightweight container that provides an isolated environment in which the build artifact can be mounted and executed.</li>
-        <li>You can scale your app, manage it, and deploy over <a href="https://addons.heroku.com/">150 add-on services</a>, from the Dashboard or CLI.</li>
+<main>
+  <section class="hall">
+    <div class="cc-container hall__grid">
+      <p class="hall__lead">Heroku's Getting Started app for Node.js, packed up and moved to Clever Cloud without a rewrite. Each box below is one piece of the Heroku setup: what it became here, and what it is doing right now.</p>
+
+      <article class="carton carton--hero" aria-labelledby="title">
+        <h1 id="title" class="carton__title">nodejs-getting-started</h1>
+        <p class="carton__route">from Heroku to Clever Cloud</p>
+        <p class="carton__scrawl"><span class="ringed">1 line</span> of code changed</p>
+
+        <div class="label" role="group" aria-label="Shipping label">
+          <div class="label__head"><span>Shipping label</span><span>1 of 1</span></div>
+          <dl class="label__fields">
+            <div><dt>From</dt><dd>Heroku: <em>Getting Started on Heroku with Node.js</em>, dyno <code>web.1</code></dd></div>
+            <div><dt>To</dt><dd>Clever Cloud: <%= cc.onClever ? cc.appName : "the Node.js runtime (run locally)" %>, delivered to <code><%= host %></code></dd></div>
+            <div><dt>Contents</dt><dd>Express 5, EJS, <code>pg</code>, one PostgreSQL table</dd></div>
+            <div><dt>Rewritten</dt><dd>one line of <code>index.js</code>: the pool also reads <code>POSTGRESQL_ADDON_URI</code></dd></div>
+          </dl>
+          <svg class="label__barcode" viewBox="0 0 <%= barcode.width %> 40" preserveAspectRatio="none" aria-hidden="true">
+            <% barcode.bars.forEach(function (bar) { %><rect x="<%= bar.x %>" y="0" width="<%= bar.w %>" height="40"/><% }); %>
+          </svg>
+          <p class="label__id"><%= cc.deployment || "local run, no deployment ID" %></p>
+        </div>
+
+        <a class="fragile" href="/cool">
+          <span class="fragile__word">Fragile</span>
+          <span class="fragile__face"><%= face %></span>
+          <span class="fragile__hint">/cool</span>
+        </a>
+      </article>
+
+      <%- include("../partials/delivery-note.ejs") %>
+
+      <div class="hall__actions">
+        <a class="move-btn" href="/db-init">Build the box <code>/db-init</code></a>
+        <a class="move-btn move-btn--ghost" href="/db">Unpack it <code>/db</code></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="inventory cc-container" aria-labelledby="inventory-title">
+    <div class="inventory__head">
+      <h2 id="inventory-title" class="inventory__title">The inventory</h2>
+      <p class="inventory__sum"><%= boxes.length %> boxes moved, one line of code changed.</p>
+      <ul class="inventory__legend" aria-label="Stamps">
+        <% counts.forEach(function (c) { %>
+          <li><span class="stamp stamp--<%= c.key %>"><%= c.label %></span> <span class="inventory__count"><%= c.count %></span></li>
+        <% }); %>
       </ul>
     </div>
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-link"></span> Next Steps</h3>
-      <ul>
-        <li>If you are following the <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs" class="alert-link">Getting Started on Heroku with Node.js</a> or
-          <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir" class="alert-link">Getting Started on Heroku Fir with Node.js</a> guide,
-          then please head back to the tutorial and follow the next steps!</li>
-      </ul>
-      <h3><span class="glyphicon glyphicon-link"></span> Helpful Links</h3>
-      <ul>
-        <li><a href="https://www.heroku.com/home">Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/">Heroku Dev Center</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started on Heroku with Node.js</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir">Getting Started on Heroku Fir with Node.js</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/deploying-nodejs">Deploying Node Apps on Heroku</a></li>
-      </ul>
-    </div>
-  </div> <!-- row -->
-  <div>
 
-  </div>
-  <div class="row" style="margin-top:1em">
-    <div class="col-md-12">
-      <p class="alert alert-info" role="alert">
-        Please do work through the Getting Started guide, even if you do know how to build such an application.  The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
-      </p>
-    </div>
-  </div>
-</div>
+    <ol class="boxes">
+      <% boxes.forEach(function (box) { %>
+        <li class="box box--<%= box.stamp %>">
+          <span class="box__no">Box <%= box.no %>/<%= boxes.length %></span>
+          <span class="stamp stamp--<%= box.stamp %> box__stamp"><%= box.stampLabel %></span>
+          <h3 class="box__name"><%= box.name %></h3>
+          <dl class="box__move">
+            <div class="box__side box__side--heroku">
+              <dt>Heroku</dt>
+              <dd><% if (box.heroku.code) { %><code><%= box.heroku.code %></code><% } %><% if (box.heroku.note) { %> <span><%= box.heroku.note %></span><% } %></dd>
+            </div>
+            <div class="box__side box__side--clever">
+              <dt>Clever Cloud</dt>
+              <dd><% if (box.clever.code) { %><code><%= box.clever.code %></code><% } %><% if (box.clever.note) { %> <span><%= box.clever.note %></span><% } %></dd>
+            </div>
+          </dl>
+          <% if (box.now) { %>
+            <p class="box__now"><%= box.now %></p>
+          <% } %>
+        </li>
+      <% }); %>
+    </ol>
+  </section>
 
+  <%- include("../partials/new-address.ejs") %>
+</main>
+
+<%- include("../partials/footer.ejs") %>
 
 </body>
 </html>

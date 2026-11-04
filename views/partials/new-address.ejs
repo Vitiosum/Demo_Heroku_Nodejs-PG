@@ -1,0 +1,28 @@
+<%# Certification and platform panel: the Clever Cloud frame, at the new address. %>
+<section class="new-address cc-container" aria-label="Clever Cloud">
+  <div class="movers">
+    <img class="movers__badge" src="/cc-badge.svg" width="200" height="200" alt="Clever Cloud Academy certification badge">
+    <div class="movers__text">
+      <h2 class="movers__title">Certified movers</h2>
+      <p class="movers__lead">This app runs on Clever Cloud. You can get certified on it too.</p>
+      <p class="movers__sub">Clever Cloud Academy teaches how to deploy, scale and run apps like this one, and certifies it.</p>
+      <a class="cc-btn cc-btn--gradient" href="https://academy.clever.cloud" target="_blank" rel="noopener">Get certified at Clever Cloud Academy</a>
+    </div>
+  </div>
+  <section class="cc-platform" aria-labelledby="platform-title">
+    <div class="cc-platform__head">
+      <h3 id="platform-title">Running on Clever Cloud</h3>
+      <% if (cc.onClever) { %>
+        <span class="cc-pill cc-pill--ok"><span class="cc-dot"></span>Live</span>
+      <% } else { %>
+        <span class="cc-pill cc-pill--muted">Local</span>
+      <% } %>
+    </div>
+    <dl class="cc-kv">
+      <% cc.rows.forEach(function (row) { %>
+        <div><dt><%= row.name %></dt><dd class="<%= row.value ? '' : 'is-empty' %>"><%= row.value || (cc.onClever ? "not set" : "Local") %></dd></div>
+      <% }); %>
+    </dl>
+    <p class="cc-platform__foot">Variables injected by Clever Cloud into the instance. Off the platform, the app runs locally.</p>
+  </section>
+</section>

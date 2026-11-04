@@ -1,23 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <%- include ("../partials/header.ejs") %>
+  <%- include("../partials/header.ejs", { title: "Unpacking test_table, moved to Clever Cloud" }) %>
 </head>
 
-<body>
+<body class="moving">
 
-<%- include ("../partials/nav.ejs") %>
+<%- include("../partials/nav.ejs") %>
 
-<div class="container">
-<h2>Database Results</h2>
+<main>
+  <section class="hall hall--room hall--unpack">
+    <div class="cc-container hall__grid">
+      <div class="room">
+        <% if (results) { %>
+          <h1 class="room__title">Unpacking test_table</h1>
+          <p class="hall__lead">Every row of the table, taken out of the box by <code>SELECT * FROM test_table</code> on PostgreSQL.</p>
+        <% } else if (note.problem && note.problem.kind === "no-table") { %>
+          <h1 class="room__title">This box isn't built yet</h1>
+          <p class="hall__lead"><code>SELECT * FROM test_table</code> found no table to open (error <%= note.problem.code %>). This page answers <strong>503</strong> until <code>/db-init</code> has built it.</p>
+        <% } else { %>
+          <h1 class="room__title">Nothing to unpack</h1>
+          <p class="hall__lead">The box could not be opened: <%= message %>. Link the PostgreSQL add-on with <code>clever service link-addon</code>, or set <code>DATABASE_URL</code> locally.</p>
+        <% } %>
 
-<ul>
-    <% results.forEach(function(r) { %>
-        <li><%= r.id %> - <%= r.name %></li>
-    <% }); %>
-</ul>
+        <div class="unpack">
+          <% if (results) { %>
+            <svg class="unpack__carton" viewBox="0 0 320 230" aria-hidden="true">
+              <polygon class="k-in" points="52,96 268,96 252,74 68,74"/>
+              <polygon class="k-flap" points="68,74 252,74 238,22 82,22"/>
+              <polygon class="k-flap k-flap--side" points="52,96 68,74 18,40 4,66"/>
+              <polygon class="k-flap k-flap--side" points="268,96 252,74 302,40 316,66"/>
+              <rect class="k-face" x="52" y="96" width="216" height="124" rx="3"/>
+              <polygon class="k-flap k-flap--front" points="52,96 268,96 280,134 40,134"/>
+              <rect class="k-tape" x="148" y="96" width="24" height="40"/>
+              <text class="k-scrawl" x="160" y="186" text-anchor="middle">test_table</text>
+            </svg>
+            <% if (results.length) { %>
+              <ol class="items" aria-label="Rows of test_table">
+                <% results.forEach(function (r) { %>
+                  <li class="item"><span class="item__id">#<%= r.id %></span><span class="item__name"><%= r.name %></span></li>
+                <% }); %>
+              </ol>
+            <% } else { %>
+              <div class="empty">
+                <p class="empty__title">The box is empty.</p>
+                <p>Put something in it from your terminal, then reload this page:</p>
+                <pre class="cmd"><code>eval "$(clever env -F shell)"
+psql "$POSTGRESQL_ADDON_URI" -c "INSERT INTO test_table (name) VALUES ('hello database')"</code></pre>
+              </div>
+            <% } %>
+          <% } else { %>
+            <svg class="unpack__carton unpack__carton--flat" viewBox="0 0 320 230" aria-hidden="true">
+              <rect class="k-face" x="86" y="70" width="148" height="90"/>
+              <rect class="k-flap" x="86" y="22" width="148" height="48"/>
+              <rect class="k-flap" x="86" y="160" width="148" height="48"/>
+              <rect class="k-flap k-flap--side" x="16" y="70" width="70" height="90"/>
+              <rect class="k-flap k-flap--side" x="234" y="70" width="70" height="90"/>
+              <path class="k-fold" d="M86 70h148M86 160h148M86 70v90M234 70v90"/>
+            </svg>
+            <div class="empty">
+              <% if (note.problem && note.problem.kind === "no-table") { %>
+                <p class="empty__title">Flat-packed: <code>test_table</code> does not exist.</p>
+                <a class="move-btn" href="/db-init">Build the box <code>/db-init</code></a>
+              <% } else { %>
+                <p class="empty__title">No PostgreSQL to unpack from.</p>
+                <p>This page answers <strong>503</strong> until the database answers.</p>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </div>
 
-</div>
+      <%- include("../partials/delivery-note.ejs") %>
+    </div>
+  </section>
+
+  <%- include("../partials/new-address.ejs") %>
+</main>
+
+<%- include("../partials/footer.ejs") %>
 
 </body>
 </html>

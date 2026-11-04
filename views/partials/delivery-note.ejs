@@ -1,0 +1,27 @@
+<%# The SQL this page ran against PostgreSQL, written like a delivery note. %>
+<aside class="note" aria-labelledby="note-title">
+  <div class="note__head">
+    <h2 id="note-title" class="note__title">Delivery note</h2>
+    <span class="note__no">No. <%= String(note.number).padStart(5, "0") %></span>
+  </div>
+  <p class="note__carrier">Carrier: PostgreSQL <%= cc.onClever ? "add-on" : "(local)" %>, via <code>pg</code></p>
+  <% if (note.connection) { %>
+    <p class="note__conn"><%= note.connection.reused ? "Connection reused from the pool" : "New connection opened" %> in <%= note.connection.ms.toFixed(1) %> ms</p>
+  <% } else if (note.problem) { %>
+    <p class="note__conn note__conn--failed">No connection: <%= note.problem.kind === "unconfigured" ? "no database variable set" : "PostgreSQL did not answer" %> (<%= note.problem.code %>)</p>
+  <% } else { %>
+    <p class="note__conn">No connection: set <code>DATABASE_URL</code> or link the PostgreSQL add-on</p>
+  <% } %>
+  <% if (note.log.length) { %>
+    <ol class="note__lines">
+      <% note.log.forEach(function (line) { %>
+        <li class="<%= line.failed ? 'is-failed' : '' %>">
+          <code class="note__sql"><%= line.sql %></code>
+          <span class="note__outcome"><%= line.outcome %></span>
+          <span class="note__ms"><%= line.ms.toFixed(1) %> ms</span>
+        </li>
+      <% }); %>
+    </ol>
+  <% } %>
+  <p class="note__sign">Received by <%= cc.onClever ? (cc.instance || "Clever Cloud") : "this machine" %></p>
+</aside>

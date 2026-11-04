@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("../partials/header.ejs", { title: "Building test_table, moved to Clever Cloud" }) %>
+</head>
+
+<body class="moving">
+
+<%- include("../partials/nav.ejs") %>
+
+<main>
+  <section class="hall hall--room">
+    <div class="cc-container hall__grid">
+      <div class="room">
+        <% if (existed === null) { %>
+          <h1 class="room__title">Can't build the box</h1>
+          <p class="hall__lead">PostgreSQL did not answer (<%= note.problem.code %>), so <code>test_table</code> could not be created. This page answers <strong>503</strong> until it does. Link the PostgreSQL add-on with <code>clever service link-addon</code>, or set <code>DATABASE_URL</code> locally.</p>
+        <% } else if (existed) { %>
+          <h1 class="room__title">Box already built</h1>
+          <p class="hall__lead"><code>test_table</code> was already there: <code>CREATE TABLE IF NOT EXISTS</code> left it, and its rows, as they were.</p>
+        <% } else { %>
+          <h1 class="room__title">Box built</h1>
+          <p class="hall__lead"><code>test_table</code> now exists in PostgreSQL, with an <code>id</code> and a <code>name</code>, ready to be filled.</p>
+        <% } %>
+
+        <div class="build<%= existed === null ? ' build--failed' : '' %>">
+          <svg class="build__carton" viewBox="0 0 320 240" aria-hidden="true">
+            <polygon class="k-side" points="260,100 300,76 300,196 260,220"/>
+            <rect class="k-face" x="60" y="100" width="200" height="120"/>
+            <polygon class="k-flap" points="60,100 100,76 200,76 160,100"/>
+            <polygon class="k-flap k-flap--right" points="160,100 200,76 300,76 260,100"/>
+            <% if (existed !== null) { %>
+              <polyline class="k-tape-run" points="200,76 160,100 160,146"/>
+            <% } %>
+            <text class="k-scrawl" x="134" y="174" text-anchor="middle">test_table</text>
+            <text class="k-scrawl k-scrawl--small" x="134" y="198" text-anchor="middle">id, name</text>
+            <g class="k-arrows" transform="translate(212 154)">
+              <path d="M8 34V8M2 14l6-8 6 8M28 34V8M22 14l6-8 6 8"/>
+            </g>
+          </svg>
+          <% if (existed !== null) { %>
+            <div class="receipt">
+              <span class="stamp stamp--added stamp--big">Database initialized</span>
+              <p>The same answer as before the move: <code>curl -s /db-init</code> still prints <code>Database initialized</code>.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <% if (existed !== null) { %>
+          <ol class="steps">
+            <li>
+              <p><strong>Put something in it</strong> from your terminal, as the Heroku tutorial did with <code>heroku pg:psql</code>:</p>
+              <pre class="cmd"><code>eval "$(clever env -F shell)"
+psql "$POSTGRESQL_ADDON_URI" -c "INSERT INTO test_table (name) VALUES ('hello database')"</code></pre>
+            </li>
+            <li>
+              <p><strong>Unpack it:</strong> every row comes out on the next page.</p>
+              <a class="move-btn" href="/db">Unpack it <code>/db</code></a>
+            </li>
+          </ol>
+        <% } %>
+      </div>
+
+      <%- include("../partials/delivery-note.ejs") %>
+    </div>
+  </section>
+
+  <%- include("../partials/new-address.ejs") %>
+</main>
+
+<%- include("../partials/footer.ejs") %>
+
+</body>
+</html>

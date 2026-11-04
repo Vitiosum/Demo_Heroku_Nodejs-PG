@@ -1,51 +1,21 @@
-<nav class="navbar navbar-default navbar-static-top navbar-inverse">
-  <div class="container">
-    <ul class="nav navbar-nav">
-      <li class="active">
-        <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
-      </li>
-      <li>
-        <a href="https://devcenter.heroku.com/articles/how-heroku-works"><span class="glyphicon glyphicon-user"></span> How Heroku Works</a>
-      </li>
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-info-sign"></span> Getting Started Guides (Cedar) <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-ruby">Getting Started on Heroku with Ruby</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started on Heroku with Node.js</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-php">Getting Started on Heroku with PHP</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-python">Getting Started on Heroku with Python</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-java">Getting Started on Heroku with Java</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-clojure">Getting Started on Heroku with Clojure</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-scala">Getting Started on Heroku with Scala</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-go">Getting Started on Heroku with Go</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-dotnet">Getting Started on Heroku with .NET</a></li>
-            <li class="divider"></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-heroku-and-connect-without-local-dev">Getting Started on Heroku with Heroku Connect</a></li>
-            <li><a href="https://devcenter.heroku.com/articles/getting-started-with-jruby">Getting Started on Heroku with Ruby (Microsoft Windows)</a></li>
-          </ul>
-      </li>
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-info-sign"></span> Getting Started Guides (Fir) <span class="caret"></span></a>
-        <ul class="dropdown-menu" role="menu">
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-ruby-fir">Getting Started on Heroku Fir with Ruby</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs-fir">Getting Started on Heroku Fir with Node.js</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-php-fir">Getting Started on Heroku Fir with PHP</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-python-fir">Getting Started on Heroku Fir with Python</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-java-maven-fir">Getting Started on Heroku Fir with Java (Maven)</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-java-gradle-fir">Getting Started on Heroku Fir with Java (Gradle)</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-clojure-fir">Getting Started on Heroku Fir with Clojure</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-scala-fir">Getting Started on Heroku Fir with Scala</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-go-fir">Getting Started on Heroku Fir with Go</a></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-dotnet-fir">Getting Started on Heroku Fir with .NET</a></li>
-          <li class="divider"></li>
-          <li><a href="https://devcenter.heroku.com/articles/getting-started-with-heroku-and-connect-without-local-dev">Getting Started on Heroku with Heroku Connect</a></li>
-        </ul>
-      </li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li class="navbar-right">
-        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span> Heroku Dev Center</a>
-      </li>
-    </ul>
+<header class="cc-topbar">
+  <div class="cc-container cc-topbar__inner">
+    <a href="https://www.clever.cloud" target="_blank" rel="noopener" aria-label="Clever Cloud">
+      <%- include("cc-logo.ejs") %>
+    </a>
+    <span class="cc-topbar__sep"></span>
+    <div class="cc-topbar__demo"><small>Demo</small>Heroku to Clever Cloud</div>
+    <span class="cc-topbar__spacer"></span>
+    <nav class="cc-topbar__nav" aria-label="Pages">
+      <a class="cc-topbar__link<%= current === '/' ? ' is-active' : '' %>" href="/"<%- current === '/' ? ' aria-current="page"' : '' %>>The move</a>
+      <a class="cc-topbar__link<%= current === '/db-init' ? ' is-active' : '' %>" href="/db-init"<%- current === '/db-init' ? ' aria-current="page"' : '' %>>Build the box</a>
+      <a class="cc-topbar__link<%= current === '/db' ? ' is-active' : '' %>" href="/db"<%- current === '/db' ? ' aria-current="page"' : '' %>>Unpack</a>
+      <% if (cc.onClever) { %>
+        <span class="cc-pill cc-pill--live cc-hide-sm"><span class="cc-dot"></span>Live on Clever Cloud</span>
+      <% } else { %>
+        <span class="cc-pill cc-pill--muted cc-hide-sm"><span class="cc-dot cc-dot--muted"></span>Local</span>
+      <% } %>
+      <a class="cc-pill cc-pill--gradient" href="https://academy.clever.cloud" target="_blank" rel="noopener">Get certified</a>
+    </nav>
   </div>
-</nav>
+</header>
