@@ -36,7 +36,7 @@
 | Database add-on | `heroku addons:create heroku-postgresql` | `clever addon create postgresql-addon` then `clever service link-addon` | Renamed | — |
 | `DATABASE_URL` | Set by Heroku Postgres | `POSTGRESQL_ADDON_URI` (and `_HOST`, `_PORT`, `_DB`, `_USER`, `_PASSWORD`), injected by the linked add-on | Renamed | **The one changed line** (commit `5f1cfec`): `process.env.DATABASE_URL \|\| process.env.POSTGRESQL_ADDON_URI` |
 | TLS to the database | `ssl: { rejectUnauthorized: false }` | The same: the add-on accepts TLS | Same | Unchanged |
-| Config vars | `heroku config:set`, `.env` read by `heroku local` | `clever env set`, `.env` read by `npm run local` | Renamed | `.env` (`TIMES=2`) kept |
+| Config vars | `heroku config:set`, `.env` read by `heroku local` | `clever env set`, `.env` read by `npm run local` | Renamed | `.env.example` (`TIMES=2`), copied to `.env` |
 | The table | `heroku pg:psql`, then `create table` | `/db-init` creates `test_table`; rows go in with `psql "$POSTGRESQL_ADDON_URI"` | Added | `/db-init` added for the move (commit `f7ab34a`) |
 | `app.json` | The Heroku Button manifest | Not read | Not needed | Kept |
 
@@ -77,7 +77,7 @@ Then open `/db`. Before step 5 it answers **503**, *This box isn't built yet*, w
 | `POSTGRESQL_ADDON_URI` | PostgreSQL add-on (linked) | Connection string, read when `DATABASE_URL` is absent; the page shows its name, never its value |
 | `DATABASE_URL` | Heroku Postgres; nobody on Clever Cloud | Read first: set it locally |
 | `PORT` | Clever Cloud | Listening port: 8080; `5006` locally by default |
-| `TIMES` | you, optional | `/times` counts from 1 to it; default 5; `npm run local` reads `TIMES=2` from `.env` |
+| `TIMES` | you, optional | `/times` counts from 1 to it; default 5; `npm run local` reads `TIMES=2` from `.env` (copy of `.env.example`) |
 | `CC_APP_NAME`, `APP_ID`, `INSTANCE_NUMBER`, `INSTANCE_TYPE`, `CC_PRETTY_INSTANCE_NAME`, `CC_COMMIT_ID`, `CC_DEPLOYMENT_ID` | Clever Cloud | Shown in the *Running on Clever Cloud* panel and on the shipping label (barcode drawn from the deployment ID) |
 
 ## Routes
@@ -106,7 +106,7 @@ views/partials/             head, Clever top bar, delivery note, certification a
 public/cc-brand.css         Clever Brand Kit, copied as is
 public/stylesheets/moving-day.css   the universe: wall, floor, kraft, tape, stamps; system fonts, no third-party resource
 Procfile, app.json          Heroku only, kept
-.env                        TIMES=2, read by `npm run local` (heroku local on Heroku)
+.env.example                TIMES=2; copied to .env, read by `npm run local` (heroku local on Heroku)
 test.js                     jest: GET / on IPv4 and IPv6, the inventory, /cool and /times, 503s without PostgreSQL,
                             exit on SIGTERM; with TEST_DATABASE_URL, /db-init then /db
 ```
@@ -117,6 +117,7 @@ Forked from [heroku/nodejs-getting-started](https://github.com/heroku/nodejs-get
 
 ```bash
 npm install
+cp .env.example .env    # TIMES=2; npm run local fails without .env
 createdb readme_heroku    # any local PostgreSQL
 DATABASE_URL="postgresql://localhost/readme_heroku?sslmode=disable" PORT=8303 npm run local
 curl -s localhost:8303/db-init
