@@ -2,7 +2,7 @@
 
 > Moving day for Heroku's *nodejs-getting-started* (Express 5, EJS): the app arrives at its new address as a kraft box with a shipping label, and its Heroku setup is unpacked as an **inventory of twelve boxes**. Each box says what a piece of the setup was on Heroku, what it became on Clever Cloud, carries an honest stamp (**same**, **renamed**, **not needed**, **added**) and a sticker with what that piece is doing right now in the running process. The move changed **one line of code**: the pool reads Heroku's `DATABASE_URL` or, when it is absent, `POSTGRESQL_ADDON_URI`, which the **PostgreSQL add-on** injects into the linked app. Every page pins a **delivery note** on the wall with the SQL it just ran on the add-on and how long each query took; `/db-init` builds the box (`test_table`) and `/db` unpacks its rows like tagged objects.
 
-![Ten-second tour, run locally: the delivery note with the SQL run on PostgreSQL, /db unpacking three rows, a fourth row inserted with psql appearing, then the inventory stickers reading the new count](docs/tour.gif)
+![Ten-second tour, run locally: the delivery note with the SQL run on PostgreSQL, /db unpacking three rows, a psql INSERT typed in a terminal, the fourth row appearing on reload, then the inventory sticker reading 4 rows](docs/tour.gif)
 
 ![The hero box and the delivery note: the SQL run on PostgreSQL for this page, run locally](docs/screenshot-desktop.png)
 
